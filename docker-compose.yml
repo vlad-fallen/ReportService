@@ -1,0 +1,44 @@
+version: '3.9'
+
+networks:
+  dev:
+    driver: bridge
+
+services:
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.8-management-alpine
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  reportservice.api:
+    image: ${DOCKER_REGISTRY-}reportserviceapi
+    container_name: reportservice.api
+    build:
+      context: .
+      dockerfile: ReportService.Api/Dockerfile
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    networks:
+      - dev
+    depends_on:
+      - reportservice.database
+  reportservice.database:
+    image: postgres:latest
+    container_name: reportservice.database
+    environment: 
+      - POSTGRES_DB=reportservice
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - reportservice-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - dev
+volumes:
+  reportservice-data:  
