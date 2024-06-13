@@ -8,6 +8,9 @@ namespace ReportService.Api.RabbitMq
     {
         public void SendingMessage<T>(T message)
         {
+            //RabbitMQ.Client.Exceptions.BrokerUnreachableException: None of the specified endpoints were reachable
+            //не смог запустить с rabbitmq
+
             var factory = new ConnectionFactory()
             {
                 HostName = "localhost",
